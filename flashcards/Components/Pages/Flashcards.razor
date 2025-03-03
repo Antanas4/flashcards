@@ -1,0 +1,21 @@
+@page "/flashcards"
+@inject HttpClient Http
+@using flashcards.Dto
+
+<h3>Flashcards</h3>
+
+<ul>
+    @foreach (var flashcard in flashcards)
+    {
+        <li>@flashcard.Question: @flashcard.Answer</li>
+    }
+</ul>
+
+@code {
+    private List<FlashcardDto> flashcards = new List<FlashcardDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        flashcards = await Http.GetFromJsonAsync<List<FlashcardDto>>("http://localhost:5215/api/flashcard");
+    }
+}
