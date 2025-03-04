@@ -1,6 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<FlashcardService>(); 
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddCors(options =>
 {
@@ -14,13 +23,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// app.UseCors("AllowBlazorApp");
-
+app.UseCors("AllowBlazorApp");
 // app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.MapControllers();
 
 app.Run();
