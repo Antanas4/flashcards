@@ -3,24 +3,27 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using server.Models;
 
-public class FlashcardService
+namespace server.Services
 {
-    private readonly AppDbContext _context;
-
-    public FlashcardService(AppDbContext context)
+    public class FlashcardService
     {
-        _context = context;
-    }
+        private readonly AppDbContext _dbContext;
 
-    public async Task<Flashcard> CreateFlashcardAsync(Flashcard flashcard)
-    {
-        _context.Flashcards.Add(flashcard);
-        await _context.SaveChangesAsync();
-        return flashcard;
-    }
+        public FlashcardService(AppDbContext context)
+        {
+            _dbContext = context;
+        }
 
-    public async Task<Flashcard> GetFlashcardByIdAsync(int id)
-    {
-        return await _context.Flashcards.FindAsync(id);
+        public async Task<Flashcard> CreateFlashcardAsync(Flashcard flashcard)
+        {
+            _dbContext.Flashcards.Add(flashcard);
+            await _dbContext.SaveChangesAsync();
+            return flashcard;
+        }
+
+        public async Task<Flashcard?> GetFlashcardByIdAsync(int id)
+        {
+            return await _dbContext.Flashcards.FindAsync(id);
+        }
     }
 }
