@@ -9,9 +9,9 @@ namespace server.Services
     {
         private readonly AppDbContext _dbContext;
 
-        public FlashcardService(AppDbContext context)
+        public FlashcardService(AppDbContext dbContext)
         {
-            _dbContext = context;
+            _dbContext = dbContext;
         }
 
         public async Task<Flashcard> CreateFlashcardAsync(Flashcard flashcard)
