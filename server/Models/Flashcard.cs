@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-
 namespace server.Models
 {
     public class Flashcard
@@ -11,11 +10,5 @@ namespace server.Models
         public required string Answer {get; set;}
 
         public Flashcard() {}
-
-        // public Flashcard(string question, string answer)
-        // {
-        //     Question = question;
-        //     Answer = answer;
-        // }
     }
 }

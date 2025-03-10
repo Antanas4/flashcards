@@ -33,7 +33,7 @@ namespace server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFlashcard(int id)
         {
-            var flashcard = await _flashcardService.GetFlashcardByIdAsync(id);
+            var flashcard = await _flashcardService.GetFlashcardByIdAsync(id: id);
             if (flashcard == null)
                 return NotFound();
 
