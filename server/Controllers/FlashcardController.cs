@@ -21,24 +21,31 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateFlashcard([FromBody] Flashcard flashcard)
+        public async Task<IActionResult> CreateFlashcardAsync([FromBody] FlashcardDto flashcardDto)
         {
-            if (flashcard == null)
+            if (flashcardDto == null)
                 return BadRequest("Invalid data.");
 
-            var createdFlashcard = await _flashcardService.CreateFlashcardAsync(flashcard);
-            return CreatedAtAction(nameof(GetFlashcard), new { id = createdFlashcard.Id }, createdFlashcard);
+            var createdFlashcardDto = await _flashcardService.CreateFlashcardAsync(flashcardDto);
+            return CreatedAtAction(nameof(GetFlashcardByIdAsync), new { id = createdFlashcardDto.Id }, createdFlashcardDto);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetFlashcard(int id)
+        public async Task<IActionResult> GetFlashcardByIdAsync(int id)
         {
-            var flashcard = await _flashcardService.GetFlashcardByIdAsync(id: id);
-            if (flashcard == null)
-                return NotFound();
-
-            var flashcardDto = _mapper.Map<FlashcardDto>(flashcard);
-            return Ok(flashcardDto);
+            try
+            {
+                var flashcardDto = await _flashcardService.GetFlashcardByIdAsync(id);
+                return Ok(flashcardDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

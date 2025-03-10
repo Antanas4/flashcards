@@ -7,7 +7,7 @@ namespace server.Models
         private int _id;
         private string _username;
         private string _password;
-        private List<FlashcardsCollection> _flashcardsCollection;
+        private List<FlashcardsCollection>? _flashcardsCollection;
 
         [Key]
         public int Id
@@ -16,22 +16,28 @@ namespace server.Models
             set => _id = value;
         }
 
-        public string Username
+        public required string Username
         {
             get => _username;
             set => _username = value;
         }
 
-        public string Password
+        public required string Password
         {
             get => _password;
             set => _password = value;
         }
 
-        public List<FlashcardsCollection> FlashcardsCollection
+        public List<FlashcardsCollection>? FlashcardsCollection
         {
             get => _flashcardsCollection;
             set => _flashcardsCollection = value;
+        }
+
+        public User(string username, string password)
+        {
+            _username = username;
+            _password = password;
         }
     }
 }

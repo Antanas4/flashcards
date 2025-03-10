@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
@@ -7,6 +8,7 @@ namespace server.Models
         private int _id;
         private string _question;
         private string _answer;
+        private FlashcardsCollection _flashcardsCollection;
 
         [Key]
         public int Id
@@ -15,16 +17,28 @@ namespace server.Models
             set => _id = value;
         }
 
-        public string Question
+        public FlashcardsCollection FlashcardsCollection
+        {
+            get => _flashcardsCollection;
+            set => _flashcardsCollection = value;
+        }
+
+        public required string Question
         {
             get => _question;
             set => _question = value;
         }
 
-        public string Answer
+        public required string Answer
         {
             get => _answer;
             set => _answer = value;
+        }
+
+        public Flashcard(string question, string answer)
+        {
+            _question = question;
+            _answer = answer;
         }
     }
 }
