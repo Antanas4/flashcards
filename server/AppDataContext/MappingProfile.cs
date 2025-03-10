@@ -7,5 +7,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Flashcard, FlashcardDto>();
+        CreateMap<User, UserDto>();
     }
 }

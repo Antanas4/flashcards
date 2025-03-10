@@ -4,11 +4,27 @@ namespace server.Models
 {
     public class Flashcard
     {
-        [Key]
-        public required int Id {get; set;}
-        public required string Question {get; set;}
-        public required string Answer {get; set;}
+        private int _id;
+        private string _question;
+        private string _answer;
 
-        public Flashcard() {}
+        [Key]
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
+
+        public string Question
+        {
+            get => _question;
+            set => _question = value;
+        }
+
+        public string Answer
+        {
+            get => _answer;
+            set => _answer = value;
+        }
     }
 }
