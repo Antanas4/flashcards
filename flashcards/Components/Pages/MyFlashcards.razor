@@ -1,15 +1,18 @@
 @page "/myFlashcards"
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @using shared.Dtos
 
 <h3>My Flashcards Collections</h3>
+<div class="new-collection-container">
+    <button class="btn btn-primary" @onclick="CreateNewCollection">New Collection</button>
+</div>
 
 @if (flashcardsCollections != null && flashcardsCollections.Any())
 {
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Collection Name</th>
                 <th>Owner ID</th>
                 <th>Description</th>
@@ -20,7 +23,6 @@
             @foreach (var collection in flashcardsCollections)
             {
                 <tr>
-                    <td>@collection.Id</td>
                     <td>@collection.Name</td>
                     <td>@collection.OwnerId</td>
                     <td>@collection.Description</td>
@@ -42,10 +44,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var apiUrl = "https://yourapiurl/api/flashcards/collections";
-
         try
         {
+            var apiUrl = "http://localhost:5215/api/flashcardsCollection"; 
+
             flashcardsCollections = await Http.GetFromJsonAsync<List<FlashcardsCollectionDto>>(apiUrl);
         }
         catch (Exception ex)
@@ -53,5 +55,10 @@ else
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }
+
+    private void CreateNewCollection()
+    {
+        NavigationManager.NavigateTo("/newCollection");
+        Console.WriteLine("Clikc");
+    }
 }
-    using f.Dtos;

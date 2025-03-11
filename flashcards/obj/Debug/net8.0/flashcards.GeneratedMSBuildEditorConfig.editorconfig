@@ -34,8 +34,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9NeUZsYXNoY2FyZHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9XZWF0aGVyLnJhem9y
+[/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/NewCollection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9OZXdDb2xsZWN0aW9uLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/antanas/gitRepositories/flashcards/flashcards/Components/Routes.razor]

@@ -10,7 +10,8 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "9.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.4",
-          "server": "1.0.0"
+          "server": "1.0.0",
+          "shared": "1.0.0"
         },
         "runtime": {
           "flashcards.dll": {}
@@ -261,10 +262,19 @@
           "Microsoft.AspNetCore.OpenApi": "8.0.10",
           "Microsoft.EntityFrameworkCore": "9.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.4",
-          "Swashbuckle.AspNetCore": "6.6.2"
+          "Swashbuckle.AspNetCore": "6.6.2",
+          "shared": "1.0.0"
         },
         "runtime": {
           "server.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "shared/1.0.0": {
+        "runtime": {
+          "shared.dll": {
             "assemblyVersion": "1.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -447,6 +457,11 @@
       "hashPath": "system.diagnostics.diagnosticsource.9.0.2.nupkg.sha512"
     },
     "server/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "shared/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -57,3 +57,5 @@
 /Users/antanas/gitRepositories/flashcards/flashcards/obj/Debug/net8.0/flashcards.pdb
 /Users/antanas/gitRepositories/flashcards/flashcards/obj/Debug/net8.0/flashcards.genruntimeconfig.cache
 /Users/antanas/gitRepositories/flashcards/flashcards/obj/Debug/net8.0/ref/flashcards.dll
+/Users/antanas/gitRepositories/flashcards/flashcards/bin/Debug/net8.0/shared.dll
+/Users/antanas/gitRepositories/flashcards/flashcards/bin/Debug/net8.0/shared.pdb

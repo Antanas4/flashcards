@@ -1,0 +1,63 @@
+@page "/newCollection"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@using shared.Dtos
+@using shared.Models
+
+<h3>Create New Flashcards Collection</h3>
+
+<EditForm Model="@newCollection" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="name">Collection Name</label>
+        <InputText id="name" class="form-control" @bind-Value="newCollection.Name" />
+    </div>
+    
+    <div class="form-group">
+        <label for="description">Description</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="newCollection.Description" />
+    </div>
+
+    <div class="form-group">
+        <label for="ownerId">Owner ID</label>
+        <InputNumber id="ownerId" class="form-control" @bind-Value="newCollection.OwnerId" />
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Collection</button>
+    </div>
+</EditForm>
+
+@code {
+    private FlashcardsCollectionDto newCollection = new FlashcardsCollectionDto
+    {
+        Name = "Default Collection Name",
+        Description = "Default Description",
+        OwnerId = 0,
+        Flashcards = new List<FlashcardDto>()
+    };
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var apiUrl = "http://localhost:5215/api/flashcardsCollection";
+            var response = await Http.PostAsJsonAsync(apiUrl, newCollection);
+
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/myFlashcards");
+            }
+            else
+            {
+                Console.WriteLine("Error occurred while creating collection.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+}
