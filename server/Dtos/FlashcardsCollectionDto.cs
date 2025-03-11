@@ -4,7 +4,7 @@ namespace server.Dtos
 {
     public class FlashcardsCollectionDto
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
         public required int OwnerId { get; set; }
         public required string Name { get; set; }
         public required List<FlashcardDto> Flashcards { get; set; }

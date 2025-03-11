@@ -40,6 +40,8 @@ namespace server.Models
             set => _description = value;
         }
 
+        public FlashcardsCollection() { }
+        
         public FlashcardsCollection(int id, string name, string description)
         {
             _id = id;

@@ -27,9 +27,23 @@ public class FlashcardsCollectionService
 
     public async Task<FlashcardsCollectionDto> CreateFlashcardsCollectionAsync(FlashcardsCollectionDto flashcardsCollectionDto)
     {
-        var flashcardsCollection = _mapper.Map<FlashcardsCollection>(flashcardsCollectionDto);
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == flashcardsCollectionDto.OwnerId);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found with id " + flashcardsCollectionDto.OwnerId);
+        }
+
+        var flashcardsCollection = new FlashcardsCollection
+        {
+            Name = flashcardsCollectionDto.Name,
+            Description = flashcardsCollectionDto.Description,
+            User = user,
+            Flashcards = flashcardsCollectionDto.Flashcards?.Select(fcDto => _mapper.Map<Flashcard>(fcDto)).ToList() // Mapping Flashcards if any
+        };
 
         _dbContext.FlashcardsCollection.Add(flashcardsCollection);
+
         await _dbContext.SaveChangesAsync();
 
         return _mapper.Map<FlashcardsCollectionDto>(flashcardsCollection);
@@ -39,6 +53,7 @@ public class FlashcardsCollectionService
     {
         var flashcardsCollection = await _dbContext.FlashcardsCollection
         .Include(c => c.Flashcards)
+        .Include(c => c.User)
         .FirstOrDefaultAsync(c => c.Id == id);
 
         if (flashcardsCollection == null)

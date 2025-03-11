@@ -17,6 +17,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 {
     services.AddScoped<FlashcardService>();
     services.AddScoped<UserService>();
+    services.AddScoped<FlashcardsCollectionService>();
 
     services.AddAutoMapper(typeof(MappingProfile));
 

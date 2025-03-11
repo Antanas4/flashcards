@@ -19,7 +19,7 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FlashcardsCollectionDto>>> GetFlashcardsCollections()
+        public async Task<ActionResult<List<FlashcardsCollectionDto>>> GetFlashcardsCollectionsAsync()
         {
             try
             {
@@ -33,17 +33,20 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<FlashcardsCollectionDto>> CreateFlashcardsCollection([FromBody] FlashcardsCollectionDto collectionDto)
+        public async Task<ActionResult<FlashcardsCollectionDto>> CreateFlashcardsCollectionAsync([FromBody] FlashcardsCollectionDto collectionDto)
         {
             if (collectionDto == null)
             {
                 return BadRequest("Flashcards collection data is required.");
             }
-
             try
             {
                 var createdCollection = await _flashcardsCollectionService.CreateFlashcardsCollectionAsync(collectionDto);
-                return CreatedAtAction(nameof(GetFlashcardsCollectionByIdAsync), new { id = createdCollection.Id }, createdCollection);
+                return Ok(createdCollection);
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
