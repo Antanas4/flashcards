@@ -2,4 +2,6 @@ server/bin/
 server/obj/
 client/bin/
 client/bin/
+shared/bin/
+shared/bin/
 .vscode
