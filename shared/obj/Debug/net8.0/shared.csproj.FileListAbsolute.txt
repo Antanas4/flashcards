@@ -1,0 +1,12 @@
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.AssemblyInfoInputs.cache
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.AssemblyInfo.cs
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.csproj.CoreCompileInputs.cache
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.sourcelink.json
+/Users/antanas/gitRepositories/flashcards/shared/bin/Debug/net8.0/shared.deps.json
+/Users/antanas/gitRepositories/flashcards/shared/bin/Debug/net8.0/shared.dll
+/Users/antanas/gitRepositories/flashcards/shared/bin/Debug/net8.0/shared.pdb
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.dll
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/refint/shared.dll
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/shared.pdb
+/Users/antanas/gitRepositories/flashcards/shared/obj/Debug/net8.0/ref/shared.dll

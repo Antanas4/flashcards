@@ -22,20 +22,16 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Counter.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db3VudGVyLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Flashcards.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9GbGFzaGNhcmRzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/MyFlashcards.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9NeUZsYXNoY2FyZHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/antanas/gitRepositories/flashcards/flashcards/Components/Pages/Weather.razor]

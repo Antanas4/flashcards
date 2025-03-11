@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using server.Models;
+using shared.Models;
 using server.Services;
-using server.Dtos;
+using shared.Dtos;
 using AutoMapper;
 
 namespace server.Controllers

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using server.Models;
-using server.Dtos;
+using shared.Models;
+using shared.Dtos;
 using AutoMapper;
 
 namespace server.Services

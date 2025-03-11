@@ -135,3 +135,5 @@
 /Users/antanas/gitRepositories/flashcards/server/obj/Debug/net8.0/server.pdb
 /Users/antanas/gitRepositories/flashcards/server/obj/Debug/net8.0/server.genruntimeconfig.cache
 /Users/antanas/gitRepositories/flashcards/server/obj/Debug/net8.0/ref/server.dll
+/Users/antanas/gitRepositories/flashcards/server/bin/Debug/net8.0/shared.dll
+/Users/antanas/gitRepositories/flashcards/server/bin/Debug/net8.0/shared.pdb

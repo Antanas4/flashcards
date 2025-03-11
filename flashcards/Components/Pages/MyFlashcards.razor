@@ -1,0 +1,57 @@
+@page "/myFlashcards"
+@inject HttpClient Http
+@using shared.Dtos
+
+<h3>My Flashcards Collections</h3>
+
+@if (flashcardsCollections != null && flashcardsCollections.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Collection Name</th>
+                <th>Owner ID</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var collection in flashcardsCollections)
+            {
+                <tr>
+                    <td>@collection.Id</td>
+                    <td>@collection.Name</td>
+                    <td>@collection.OwnerId</td>
+                    <td>@collection.Description</td>
+                    <td>
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No collections found.</p>
+}
+
+@code {
+    private List<FlashcardsCollectionDto> flashcardsCollections;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = "https://yourapiurl/api/flashcards/collections";
+
+        try
+        {
+            flashcardsCollections = await Http.GetFromJsonAsync<List<FlashcardsCollectionDto>>(apiUrl);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+}
+    using f.Dtos;

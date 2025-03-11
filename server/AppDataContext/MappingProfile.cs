@@ -1,6 +1,6 @@
 using AutoMapper;
-using server.Models;
-using server.Dtos;
+using shared.Models;
+using shared.Dtos;
 
 public class MappingProfile : Profile
 {

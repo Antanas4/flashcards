@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using server.Models;
+using shared.Models;
 
 public class AppDbContext : DbContext
 {
