@@ -20,6 +20,7 @@ public class FlashcardsCollectionService
     {
         var flashcardsCollections = await _dbContext.FlashcardsCollection
             .Include(c => c.Flashcards)
+            .Include(c => c.User)
             .ToListAsync();
 
         return _mapper.Map<List<FlashcardsCollectionDto>>(flashcardsCollections);
