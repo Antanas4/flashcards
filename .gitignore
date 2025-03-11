@@ -1,7 +1,7 @@
 server/bin/
 server/obj/
-client/bin/
-client/bin/
+flashcards/bin/
+flashcards/obj/
 shared/bin/
-shared/bin/
+shared/obj/
 .vscode
