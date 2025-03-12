@@ -71,5 +71,27 @@ namespace server.Controllers
                 return StatusCode(500, "An error occurred while processing your request: " + ex.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteFlashcardsCollectionByIdAsync(int id)
+        {
+            try
+            {
+                var result = await _flashcardsCollectionService.DeleteFlashcardsCollectionByIdAsync(id);
+                if (result)
+                {
+                    return Ok(new { message = "Collection deleted successfully." });
+                }
+                return BadRequest("An error occurred while deleting the collection.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

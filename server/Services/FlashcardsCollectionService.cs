@@ -64,4 +64,19 @@ public class FlashcardsCollectionService
 
         return _mapper.Map<FlashcardsCollectionDto>(flashcardsCollection);
     }
+
+    public async Task<bool> DeleteFlashcardsCollectionByIdAsync(int id)
+    {
+        var flashcardsCollection = await _dbContext.FlashcardsCollection.FindAsync(id);
+
+        if (flashcardsCollection == null)
+        {
+            throw new KeyNotFoundException("Collection not found");
+        }
+
+        _dbContext.FlashcardsCollection.Remove(flashcardsCollection);
+        await _dbContext.SaveChangesAsync();
+
+        return true;   
+    }
 }

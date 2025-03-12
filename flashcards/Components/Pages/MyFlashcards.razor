@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using shared.Dtos
+@rendermode InteractiveServer
 
 <h3>My Flashcards Collections</h3>
 <div class="new-collection-container">
@@ -27,7 +28,7 @@
                     <td>@collection.OwnerId</td>
                     <td>@collection.Description</td>
                     <td>
-                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                        <a href="#">Edit</a> | <button class="btn btn-danger" @onclick= "() => DeleteCollectionAsync(collection.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -60,5 +61,28 @@ else
     {
         NavigationManager.NavigateTo("/newCollection");
         Console.WriteLine("Clikc");
+    }
+
+    private async Task DeleteCollectionAsync(int collectionId)
+    {
+        try
+        {
+            var apiUrl = $"http://localhost:5215/api/flashcardsCollection/{collectionId}"; 
+
+            var response = await Http.DeleteAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                flashcardsCollections.RemoveAll(c => c.Id == collectionId);
+            }
+            else
+            {
+                Console.WriteLine($"Failed to delete collection. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace server.Services
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
 
-            if (user == null)
+            if (user is null)
             {
                 throw new KeyNotFoundException("User not found.");
             }
@@ -60,7 +60,7 @@ namespace server.Services
         {
             var user = await _dbContext.Users.FindAsync(id);
 
-            if (user == null)
+            if (user is null)
             {
                 throw new KeyNotFoundException("User not found");
             }
