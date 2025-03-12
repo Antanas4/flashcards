@@ -1,0 +1,33 @@
+@using shared.Dtos
+@namespace flashcards.Components
+
+<div class="card mb-3 p-3">
+    <EditForm Model="FlashcardDto">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label class="form-label fw-bold">Question</label>
+            <InputText class="form-control" @bind-Value="FlashcardDto.Question" />
+            <ValidationMessage For="@(() => FlashcardDto.Question)" />
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label fw-bold">Answer</label>
+            <InputText class="form-control" @bind-Value="FlashcardDto.Answer" />
+            <ValidationMessage For="@(() => FlashcardDto.Answer)" />
+        </div>
+
+        <button type="button" class="btn btn-danger" @onclick="RemoveCard">Remove</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public FlashcardDto FlashcardDto { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+
+    private async Task RemoveCard()
+    {
+        await OnRemove.InvokeAsync();
+    }
+}

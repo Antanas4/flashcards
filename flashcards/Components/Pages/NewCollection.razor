@@ -3,40 +3,64 @@
 @inject HttpClient Http
 @using shared.Dtos
 @using shared.Models
+@using flashcards.Components
+@rendermode InteractiveServer
 
-<h3>Create New Flashcards Collection</h3>
+<h3 class="text-center mt-3">Create New Flashcards Collection</h3>
 
-<EditForm Model="@newCollection" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="container">
+    <div class="card p-4 mt-4">
 
-    <div class="form-group">
-        <label for="name">Collection Name</label>
-        <InputText id="name" class="form-control" @bind-Value="newCollection.Name" />
+        <EditForm Model="@newCollection" OnValidSubmit="HandleSubmit" @ref="editForm">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="name" class="form-label fw-bold">Collection Name</label>
+                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' " @bind-Value="newCollection.Name" />
+                <ValidationMessage For="@(() => newCollection.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label fw-bold">Description</label>
+                <InputTextArea id="description" placeholder="Add a description" class="form-control" @bind-Value="newCollection.Description" />
+                <ValidationMessage For="@(() => newCollection.Description)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="ownerId" class="form-label fw-bold">Owner ID</label>
+                <InputNumber id="ownerId" class="form-control" @bind-Value="newCollection.OwnerId" />
+                <ValidationMessage For="@(() => newCollection.OwnerId)" />
+            </div>
+
+            <h4 class="mt-4">Flashcards</h4>
+
+            @foreach (var flashcard in newCollection.Flashcards)
+            {
+                <Flashcard FlashcardDto="@flashcard" OnRemove="@(() => RemoveFlashcard(flashcard))" />
+            }
+
+            <button type="button" class="btn btn-success mt-3" @onclick="AddFlashcard">+ Add Flashcard</button>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-primary">Create Collection</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+            </div>
+        </EditForm>
     </div>
-    
-    <div class="form-group">
-        <label for="description">Description</label>
-        <InputTextArea id="description" class="form-control" @bind-Value="newCollection.Description" />
-    </div>
-
-    <div class="form-group">
-        <label for="ownerId">Owner ID</label>
-        <InputNumber id="ownerId" class="form-control" @bind-Value="newCollection.OwnerId" />
-    </div>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Create Collection</button>
-    </div>
-</EditForm>
+</div>
 
 @code {
+    private EditForm editForm;
     private FlashcardsCollectionDto newCollection = new FlashcardsCollectionDto
     {
-        Name = "Default Collection Name",
-        Description = "Default Description",
+        Name = "",
+        Description = "",
         OwnerId = 0,
-        Flashcards = new List<FlashcardDto>()
+        Flashcards = new List<FlashcardDto>
+        {
+            new FlashcardDto { Question = "", Answer = "" },
+            new FlashcardDto { Question = "", Answer = "" }
+        }
     };
 
     private async Task HandleSubmit()
@@ -59,5 +83,25 @@
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/myFlashcards");
+    }
+
+    private void AddFlashcard()
+    {
+        newCollection.Flashcards.Add(new FlashcardDto
+        {
+            Question = "",
+            Answer = ""
+        });
+        StateHasChanged(); 
+    }
+
+    private void RemoveFlashcard(FlashcardDto flashcardDto)
+    {
+        newCollection.Flashcards.Remove(flashcardDto);
     }
 }

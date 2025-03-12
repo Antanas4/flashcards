@@ -40,7 +40,7 @@ public class FlashcardsCollectionService
             Name = flashcardsCollectionDto.Name,
             Description = flashcardsCollectionDto.Description,
             User = user,
-            Flashcards = flashcardsCollectionDto.Flashcards?.Select(fcDto => _mapper.Map<Flashcard>(fcDto)).ToList() // Mapping Flashcards if any
+            Flashcards = flashcardsCollectionDto.Flashcards?.Select(fcDto => _mapper.Map<Flashcard>(fcDto)).ToList()
         };
 
         _dbContext.FlashcardsCollection.Add(flashcardsCollection);
