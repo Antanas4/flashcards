@@ -44,7 +44,7 @@ namespace server.Controllers
                 var createdCollection = await _flashcardsCollectionService.CreateFlashcardsCollectionAsync(collectionDto);
                 return Ok(createdCollection);
             }
-            catch(KeyNotFoundException ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
@@ -83,6 +83,28 @@ namespace server.Controllers
                     return Ok(new { message = "Collection deleted successfully." });
                 }
                 return BadRequest("An error occurred while deleting the collection.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateFlashcardsCollectionByIdAsync(FlashcardsCollectionDto updatedCollectionDto)
+        {
+            try
+            {
+                var result = await _flashcardsCollectionService.UpdateFlashcardsCollectionByIdAsync(updatedCollectionDto);
+                if (result)
+                {
+                    return Ok(new { message = "Collection updated successfully." });
+                }
+                return BadRequest("An error occurred while updating the collection.");
             }
             catch (KeyNotFoundException ex)
             {

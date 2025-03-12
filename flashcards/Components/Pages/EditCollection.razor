@@ -1,0 +1,124 @@
+@page "/editCollection/{id:int}"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<h3 class="text-center mt-3">Edit Flashcards Collection</h3>
+
+<div class="container">
+    <div class="card p-4 mt-4">
+
+        <EditForm Model="@flashcardsCollection" OnValidSubmit="HandleSubmitAsync" @ref="editForm">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="name" class="form-label fw-bold">Collection Name</label>
+                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' " @bind-Value="flashcardsCollection.Name" />
+                <ValidationMessage For="@(() => flashcardsCollection.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label fw-bold">Description</label>
+                <InputTextArea id="description" placeholder="Add a description" class="form-control" @bind-Value="flashcardsCollection.Description" />
+                <ValidationMessage For="@(() => flashcardsCollection.Description)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="ownerId" class="form-label fw-bold">Owner ID</label>
+                <InputNumber id="ownerId" class="form-control" @bind-Value="flashcardsCollection.OwnerId" />
+                <ValidationMessage For="@(() => flashcardsCollection.OwnerId)" />
+            </div>
+
+            <h4 class="mt-4">Flashcards</h4>
+
+            @foreach (var flashcard in flashcardsCollection.Flashcards)
+            {
+                <Flashcard FlashcardDto="@flashcard" OnRemove="@(() => RemoveFlashcard(flashcard))" />
+            }
+
+            <button type="button" class="btn btn-success mt-3" @onclick="AddFlashcard">+ Add Flashcard</button>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-primary">Update Collection</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private EditForm editForm;
+    private FlashcardsCollectionDto flashcardsCollection = new FlashcardsCollectionDto
+    {
+        Flashcards = new List<FlashcardDto>()
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCollectionDataAsync();
+    }
+
+    private async Task LoadCollectionDataAsync()
+    {
+        try
+        {
+            var apiUrl = $"http://localhost:5215/api/flashcardsCollection/{id}";
+            var response = await Http.GetFromJsonAsync<FlashcardsCollectionDto>(apiUrl);
+
+            if (response != null)
+            {
+                flashcardsCollection = response;
+            }
+            else
+            {
+                Console.WriteLine("Collection not found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred while loading collection: {ex.Message}");
+        }
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        try
+        {
+            var apiUrl = $"http://localhost:5215/api/flashcardsCollection/{id}";
+            var response = await Http.PatchAsJsonAsync(apiUrl, flashcardsCollection);
+
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/myFlashcards");
+            }
+            else
+            {
+                Console.WriteLine("Error occurred while updating collection." + response);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/myFlashcards");
+    }
+
+    private void AddFlashcard()
+    {
+        flashcardsCollection.Flashcards.Add(new FlashcardDto
+        {
+            Question = "",
+            Answer = ""
+        });
+    }
+
+    private void RemoveFlashcard(FlashcardDto flashcardDto)
+    {
+        flashcardsCollection.Flashcards.Remove(flashcardDto);
+    }
+}

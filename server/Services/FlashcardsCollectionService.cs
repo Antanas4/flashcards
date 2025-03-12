@@ -77,6 +77,51 @@ public class FlashcardsCollectionService
         _dbContext.FlashcardsCollection.Remove(flashcardsCollection);
         await _dbContext.SaveChangesAsync();
 
-        return true;   
+        return true;
+    }
+
+    public async Task<bool> UpdateFlashcardsCollectionByIdAsync(FlashcardsCollectionDto updatedCollectionDto)
+    {
+        var collectionToUpdate = await _dbContext.FlashcardsCollection
+            .Include(c => c.Flashcards)
+            .FirstOrDefaultAsync(c => c.Id == updatedCollectionDto.Id);
+
+        if (collectionToUpdate == null)
+        {
+            throw new KeyNotFoundException("Collection not found");
+        }
+
+        collectionToUpdate.Name = updatedCollectionDto.Name;
+        collectionToUpdate.Description = updatedCollectionDto.Description;
+
+        foreach (var updatedFlashcard in updatedCollectionDto.Flashcards)
+        {
+            var existingFlashcard = collectionToUpdate.Flashcards
+                .FirstOrDefault(f => f.Id == updatedFlashcard.Id);
+
+            if (existingFlashcard != null)
+            {
+                existingFlashcard.Question = updatedFlashcard.Question;
+                existingFlashcard.Answer = updatedFlashcard.Answer;
+            }
+            else
+            {
+                var newFlashcard = _mapper.Map<Flashcard>(updatedFlashcard);
+                collectionToUpdate.Flashcards.Add(newFlashcard);
+            }
+        }
+
+        var flashcardsToRemove = collectionToUpdate.Flashcards
+            .Where(f => !updatedCollectionDto.Flashcards.Any(uf => uf.Id == f.Id))
+            .ToList();
+
+        foreach (var flashcardToRemove in flashcardsToRemove)
+        {
+            _dbContext.Flashcards.Remove(flashcardToRemove);
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }
