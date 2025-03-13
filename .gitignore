@@ -1,7 +1,7 @@
-server/bin/
-server/obj/
-flashcards/bin/
-flashcards/obj/
-shared/bin/
-shared/obj/
+server/bin
+server/obj
+flashcards/bin
+flashcards/obj
+shared/bin
+shared/obj
 .vscode
