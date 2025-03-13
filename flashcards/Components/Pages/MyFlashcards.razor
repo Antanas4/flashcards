@@ -28,7 +28,7 @@
                     <td>@collection.OwnerId</td>
                     <td>@collection.Description</td>
                     <td>
-                        <a href="#">Edit</a> | <button class="btn btn-danger" @onclick= "() => DeleteCollectionAsync(collection.Id)">Delete</button>
+                        <a href="/editCollection/@collection.Id">Edit</a> | <button class="btn btn-danger" @onclick= "() => DeleteCollectionAsync(collection.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -60,7 +60,6 @@ else
     private void CreateNewCollection()
     {
         NavigationManager.NavigateTo("/newCollection");
-        Console.WriteLine("Clikc");
     }
 
     private async Task DeleteCollectionAsync(int collectionId)
