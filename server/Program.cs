@@ -20,6 +20,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddScoped<FlashcardService>();
     services.AddScoped<UserService>();
     services.AddScoped<FlashcardsCollectionService>();
+    services.AddScoped<AuthService>();
 
     services.AddAutoMapper(typeof(FlashcardMapperProfile), 
                         typeof(FlashcardsCollectionMapperProfile),
@@ -41,12 +42,31 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
                   .AllowAnyMethod();
         });
     });
+
+    // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    // .AddJwtBearer(options =>
+    // {
+    //     options.TokenValidationParameters = new TokenValidationParameters
+    //     {
+    //         ValidateIssuer = true,
+    //         ValidateAudience = true,
+    //         ValidateLifetime = true,
+    //         ValidateIssuerSigningKey = true,
+    //         ValidIssuer = builder.Configuration["Jwt:Issuer"],
+    //         ValidAudience = builder.Configuration["Jwt:Audience"],
+    //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+    //     };
+    // });
+    
+    builder.Services.AddSingleton<TokenProvider>();
 }
 
 void ConfigureApp(WebApplication app)
 {
     app.UseCors("AllowBlazorApp");
     // app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.UseStaticFiles();
     app.UseRouting();
     app.MapControllers();
