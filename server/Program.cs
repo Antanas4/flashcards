@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using server.Services;
+using server.MapperProfile;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,10 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddScoped<UserService>();
     services.AddScoped<FlashcardsCollectionService>();
 
-    services.AddAutoMapper(typeof(MappingProfile));
+    services.AddAutoMapper(typeof(FlashcardMapperProfile), 
+                        typeof(FlashcardsCollectionMapperProfile),
+                        typeof(UserMapperProfile));
+
 
     services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
