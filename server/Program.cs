@@ -2,9 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using server.Services;
 using server.MapperProfile;
-
+using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotEnv.Load();
 
 ConfigureServices(builder.Services, builder.Configuration);
 

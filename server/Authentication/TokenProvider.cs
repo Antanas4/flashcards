@@ -15,7 +15,10 @@ public sealed class TokenProvider
 
     public string Create(UserDto user)
     {
-        string secretKey = _configuration["Jwt:Secret"];
+        string issuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+        string audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+        string secretKey = Environment.GetEnvironmentVariable("JWT_SECRET");
+
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -29,8 +32,8 @@ public sealed class TokenProvider
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = credentials,
-            Issuer = _configuration["Jwt:Issuer"],
-            Audience = _configuration["Jwt:Audience"],
+            Issuer = issuer,
+            Audience = audience,
         };
 
         var handler = new JwtSecurityTokenHandler();
