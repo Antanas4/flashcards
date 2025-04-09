@@ -1,5 +1,6 @@
 server/bin
 server/obj
+server/.env
 flashcards/bin
 flashcards/obj
 shared/bin

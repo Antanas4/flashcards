@@ -11,5 +11,7 @@ namespace shared.Dtos
 
         [Required(ErrorMessage = "Answer is required")]
         public string Answer { get; set; }
+
+        public int CorrectAnswerStreak { get; set; }
     }
 }
