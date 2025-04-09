@@ -3,8 +3,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 using server.Services;
 using server.MapperProfile;
 using dotenv.net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpContextAccessor();
 
 DotEnv.Load();
 
@@ -24,7 +29,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddScoped<FlashcardsCollectionService>();
     services.AddScoped<AuthService>();
 
-    services.AddAutoMapper(typeof(FlashcardMapperProfile), 
+    services.AddAutoMapper(typeof(FlashcardMapperProfile),
                         typeof(FlashcardsCollectionMapperProfile),
                         typeof(UserMapperProfile));
 
@@ -45,21 +50,21 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
         });
     });
 
-    // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    // .AddJwtBearer(options =>
-    // {
-    //     options.TokenValidationParameters = new TokenValidationParameters
-    //     {
-    //         ValidateIssuer = true,
-    //         ValidateAudience = true,
-    //         ValidateLifetime = true,
-    //         ValidateIssuerSigningKey = true,
-    //         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-    //         ValidAudience = builder.Configuration["Jwt:Audience"],
-    //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
-    //     };
-    // });
-    
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")))
+        };
+    });
+
     builder.Services.AddSingleton<TokenProvider>();
 }
 
@@ -67,9 +72,9 @@ void ConfigureApp(WebApplication app)
 {
     app.UseCors("AllowBlazorApp");
     // app.UseHttpsRedirection();
+    app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
     app.UseStaticFiles();
-    app.UseRouting();
     app.MapControllers();
 }

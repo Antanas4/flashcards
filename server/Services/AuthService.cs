@@ -2,6 +2,8 @@ using shared.Dtos;
 using shared.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+
 
 namespace server.Services
 {
@@ -9,6 +11,7 @@ namespace server.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AuthService(AppDbContext dbContext, IMapper mapper)
         {
@@ -24,6 +27,19 @@ namespace server.Services
                 return null;
 
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<UserDto> GetAuthenticatedUserAsync()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var userIdClaim = user?.FindFirst(JwtRegisteredClaimNames.Sub);
+
+            if (userIdClaim == null)
+                return null;
+
+            var dbUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userIdClaim.Value));
+
+            return dbUser != null ? _mapper.Map<UserDto>(dbUser) : null;
         }
     }
 }

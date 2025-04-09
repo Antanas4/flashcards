@@ -12,11 +12,13 @@ namespace server.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly AuthService _authService;
 
-        public FlashcardsCollectionService(AppDbContext dbContext, IMapper mapper)
+        public FlashcardsCollectionService(AppDbContext dbContext, IMapper mapper, AuthService authService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _authService = authService;
         }
 
         public async Task<List<FlashcardsCollectionDto>> GetFlashcardsCollectionsAsync()
@@ -31,18 +33,18 @@ namespace server.Services
 
         public async Task<FlashcardsCollectionDto> CreateFlashcardsCollectionAsync(FlashcardsCollectionDto flashcardsCollectionDto)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == flashcardsCollectionDto.OwnerId);
+            var userDto = await _authService.GetAuthenticatedUserAsync();
 
-            if (user == null)
+            if (userDto == null)
             {
-                throw new KeyNotFoundException("User not found with id " + flashcardsCollectionDto.OwnerId);
+                throw new KeyNotFoundException("Authenticated user not found.");
             }
 
             var flashcardsCollection = new FlashcardsCollection
             {
                 Name = flashcardsCollectionDto.Name,
                 Description = flashcardsCollectionDto.Description,
-                User = user,
+                User = _mapper.Map<User>(userDto),
                 Flashcards = flashcardsCollectionDto.Flashcards?.Select(fcDto => _mapper.Map<Flashcard>(fcDto)).ToList()
             };
 

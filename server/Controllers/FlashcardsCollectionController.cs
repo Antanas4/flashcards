@@ -4,6 +4,7 @@ using server.Services;
 using shared.Models;
 using shared.Dtos;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace server.Controllers
 {
@@ -33,6 +34,7 @@ namespace server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<FlashcardsCollectionDto>> CreateFlashcardsCollectionAsync([FromBody] FlashcardsCollectionDto collectionDto)
         {
             if (collectionDto == null)
