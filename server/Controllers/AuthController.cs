@@ -22,7 +22,7 @@ namespace server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] UserDto loginRequest)
         {
             var userDto = await _authService.AuthenticateUserAsync(loginRequest.Username, loginRequest.Password);
     

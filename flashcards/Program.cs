@@ -1,4 +1,5 @@
 using flashcards.Components;
+using Blazored.LocalStorage;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<LocalStorageService>();
 
 
 var app = builder.Build();
