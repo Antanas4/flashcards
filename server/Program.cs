@@ -28,6 +28,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddScoped<UserService>();
     services.AddScoped<FlashcardsCollectionService>();
     services.AddScoped<AuthService>();
+    services.AddHttpContextAccessor();
 
     services.AddAutoMapper(typeof(FlashcardMapperProfile),
                         typeof(FlashcardsCollectionMapperProfile),

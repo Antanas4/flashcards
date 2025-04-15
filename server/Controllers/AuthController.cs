@@ -32,5 +32,15 @@ namespace server.Controllers
             string token = _tokenProvider.Create(userDto);
             return Ok(new { Token = token });
         }
+
+        [HttpGet]
+        public async Task<ActionResult<UserDto>> GetAuthenticatedUser()
+        {
+            var userDto = await _authService.GetAuthenticatedUserAsync();
+            if (userDto == null)
+                return NotFound("User not authenticated.");
+            
+            return Ok(userDto);
+        }
     }
 }

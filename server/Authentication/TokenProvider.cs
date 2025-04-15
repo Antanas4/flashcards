@@ -27,8 +27,7 @@ public sealed class TokenProvider
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = credentials,

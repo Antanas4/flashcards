@@ -20,12 +20,13 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FlashcardsCollectionDto>>> GetFlashcardsCollectionsAsync()
+        [Authorize]
+        public async Task<ActionResult<List<FlashcardsCollectionDto>>> GetMyFlashcardsCollectionsAsync()
         {
             try
             {
-                var flashcardsCollections = await _flashcardsCollectionService.GetFlashcardsCollectionsAsync();
-                return Ok(flashcardsCollections);
+                var userCollections = await _flashcardsCollectionService.GetMyFlashcardsCollectionsAsync();
+                return Ok(userCollections);
             }
             catch (Exception ex)
             {

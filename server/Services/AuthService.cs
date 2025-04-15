@@ -3,6 +3,8 @@ using shared.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
 
 
 namespace server.Services
@@ -13,10 +15,11 @@ namespace server.Services
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(AppDbContext dbContext, IMapper mapper)
+        public AuthService(AppDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<UserDto> AuthenticateUserAsync(string username, string password)
@@ -31,15 +34,17 @@ namespace server.Services
 
         public async Task<UserDto> GetAuthenticatedUserAsync()
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            var userIdClaim = user?.FindFirst(JwtRegisteredClaimNames.Sub);
 
-            if (userIdClaim == null)
+            var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            var userDataClaim = claimsIdentity?.FindFirst(ClaimTypes.Name);
+            var userId = userDataClaim;
+
+            if (userId == null)
                 return null;
 
-            var dbUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userIdClaim.Value));
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId.Value));
 
-            return dbUser != null ? _mapper.Map<UserDto>(dbUser) : null;
+            return user != null ? _mapper.Map<UserDto>(user) : null;
         }
     }
 }

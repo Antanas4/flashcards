@@ -41,6 +41,7 @@
             {
                 var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 authToken = result?.Token;
+                Console.WriteLine($"Token: {authToken}");
 
                 localStorage.SetTokenAsync(tokenKey, authToken);
 

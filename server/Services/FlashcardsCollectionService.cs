@@ -21,14 +21,18 @@ namespace server.Services
             _authService = authService;
         }
 
-        public async Task<List<FlashcardsCollectionDto>> GetFlashcardsCollectionsAsync()
+        public async Task<List<FlashcardsCollectionDto>> GetMyFlashcardsCollectionsAsync()
         {
-            var flashcardsCollections = await _dbContext.FlashcardsCollection
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var collections = await _dbContext.FlashcardsCollection
+                .Where(c => c.User.Id == user.Id)
                 .Include(c => c.Flashcards)
-                .Include(c => c.User)
                 .ToListAsync();
 
-            return _mapper.Map<List<FlashcardsCollectionDto>>(flashcardsCollections);
+            return _mapper.Map<List<FlashcardsCollectionDto>>(collections);
         }
 
         public async Task<FlashcardsCollectionDto> CreateFlashcardsCollectionAsync(FlashcardsCollectionDto flashcardsCollectionDto)
