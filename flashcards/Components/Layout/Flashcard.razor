@@ -17,8 +17,9 @@
             <InputText class="form-control" @bind-Value="FlashcardDto.Answer" />
             <ValidationMessage For="@(() => FlashcardDto.Answer)" />
         </div>
-
-        <button type="button" class="btn btn-danger" @onclick="RemoveCard">Remove</button>
+        <div class="d-flex justify-content-end">
+            <Icon Name="IconName.Trash" Size="IconSize.x3" Class="text-danger" @onclick="RemoveCard" />
+        </div>
     </EditForm>
 </div>
 

@@ -7,49 +7,64 @@
 @using Blazored
 @rendermode InteractiveServer
 
-<h3>My Flashcards Collections</h3>
-<div class="new-collection-container">
-    <button class="btn btn-primary" @onclick="CreateNewCollection">New Collection</button>
-</div>
+<h3>My Collections</h3>
 
-@if (flashcardsCollections != null && flashcardsCollections.Any())
+@if (!loaded)
 {
-    <div class="card-grid">
-        @foreach (var collection in flashcardsCollections)
-        {
-            <div class="card flashcard">
-                <div class="card-body">
-                    <h5 class="card-title">@collection.Name</h5>
-                    <p class="card-text">@collection.Description</p>
-                    <div class="card-buttons">
-                        @* <button class="btn btn-primary" @onclick="() => StudyCollection(collection.Id)">Study</button> *@
-                        <button class="btn btn-secondary" @onclick="() => EditCollection(collection.Id)">Edit</button>
-                        @* <button class="btn btn-danger" @onclick="() => DeleteCollectionAsync(collection.Id)">Delete</button> *@
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+    <p>Loading...</p>
+}
+else if (!isLoggedIn)
+{
+    <p>Please <a href="/login">log in</a> to create new collections.</p>
 }
 else
 {
-    <p>No collections found.</p>
+    <div class="new-collection-container">
+        <button class="btn btn-primary" @onclick="CreateNewCollection">+ New Collection</button>
+    </div>
+
+    @if (flashcardsCollections != null && flashcardsCollections.Any())
+    {
+        <div class="card-grid">
+            @foreach (var collection in flashcardsCollections)
+            {
+                <div class="card flashcard">
+                    <div class="card-body">
+                        <h5 class="card-title">@collection.Name</h5>
+                        <p class="card-text">@collection.Description</p>
+                        <div class="card-buttons">
+                            <button class="btn btn-secondary" @onclick="() => EditCollection(collection.Id)">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No collections found.</p>
+    }
 }
+
 
 @code {
     private List<FlashcardsCollectionDto> flashcardsCollections;
-    private bool _loaded;
+    private bool loaded;
+    private bool isLoggedIn;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_loaded)
+        if (firstRender && !loaded)
         {
             try
             {
                 var token = await localStorageService.GetTokenAsync("authToken");
-                if (string.IsNullOrWhiteSpace(token))
+
+                isLoggedIn = !string.IsNullOrWhiteSpace(token);
+                if (!isLoggedIn)
                 {
-                    Console.WriteLine("No token found.");
+                    loaded = true;
+                    StateHasChanged();
                     return;
                 }
 
@@ -73,7 +88,7 @@ else
                     Console.WriteLine($"Failed to fetch flashcards. Status: {response.StatusCode}, Reason: {response.ReasonPhrase}");
                 }
 
-                _loaded = true;
+                loaded = true;
                 StateHasChanged(); // Re-render the component after the data is fetched
             }
             catch (Exception ex)
