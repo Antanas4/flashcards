@@ -7,8 +7,7 @@ namespace shared.Dtos
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Owner ID is required")]
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
 
         [Required(ErrorMessage = "Collection Name is required")]
         public string Name { get; set; }

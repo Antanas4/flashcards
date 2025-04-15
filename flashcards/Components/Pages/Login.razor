@@ -4,20 +4,31 @@
 @inject NavigationManager Navigation
 @rendermode RenderMode.InteractiveServer
 
-<EditForm Model="@userDto" OnValidSubmit="HandleLogin" FormName="loginForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="login-container">
+    <EditForm Model="@userDto" OnValidSubmit="HandleLogin" FormName="loginForm">
+        <DataAnnotationsValidator />
 
-    <div class="mb-3">
-        <label>Username</label>
-        <InputText class="form-control" @bind-Value="userDto.Username" />
-    </div>
-    <div class="mb-3">
-        <label>Password</label>
-        <InputText type="password" class="form-control" @bind-Value="userDto.Password" />
-    </div>
-    <button class="btn btn-primary" type="submit">Login</button>
-</EditForm>
+
+        <div class="mb-3">
+            <label>Username</label>
+            <InputText class="form-control" @bind-Value="userDto.Username" />
+            <ValidationMessage For="@(() => userDto.Username)" />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <InputText type="password" class="form-control" @bind-Value="userDto.Password" />
+            <ValidationMessage For="@(() => userDto.Password)" />
+        </div>
+        <button class="btn btn-primary" type="submit">Login</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message">
+            @ErrorMessage
+        </div>
+    }
+</div>
 
 @code {
     private string? ErrorMessage;

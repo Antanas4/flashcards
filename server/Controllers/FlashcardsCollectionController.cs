@@ -47,10 +47,6 @@ namespace server.Controllers
                 var createdCollection = await _flashcardsCollectionService.CreateFlashcardsCollectionAsync(collectionDto);
                 return Ok(createdCollection);
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");

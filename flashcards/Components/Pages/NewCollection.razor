@@ -1,5 +1,6 @@
 @page "/newCollection"
 @inject NavigationManager NavigationManager
+@inject LocalStorageService localStorageService
 @inject HttpClient Http
 @rendermode InteractiveServer
 
@@ -13,20 +14,16 @@
 
             <div class="mb-3">
                 <label for="name" class="form-label fw-bold">Collection Name</label>
-                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' " @bind-Value="newCollection.Name" />
+                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' "
+                    @bind-Value="newCollection.Name" />
                 <ValidationMessage For="@(() => newCollection.Name)" />
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label fw-bold">Description</label>
-                <InputTextArea id="description" placeholder="Add a description" class="form-control" @bind-Value="newCollection.Description" />
+                <InputTextArea id="description" placeholder="Add a description" class="form-control"
+                    @bind-Value="newCollection.Description" />
                 <ValidationMessage For="@(() => newCollection.Description)" />
-            </div>
-
-            <div class="mb-3">
-                <label for="ownerId" class="form-label fw-bold">Owner ID</label>
-                <InputNumber id="ownerId" class="form-control" @bind-Value="newCollection.OwnerId" />
-                <ValidationMessage For="@(() => newCollection.OwnerId)" />
             </div>
 
             <h4 class="mt-4">Flashcards</h4>
@@ -52,7 +49,6 @@
     {
         Name = "",
         Description = "",
-        OwnerId = 0,
         Flashcards = new List<FlashcardDto>
         {
             new FlashcardDto { Question = "", Answer = "" },
@@ -64,8 +60,22 @@
     {
         try
         {
+            var token = await localStorageService.GetTokenAsync("authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("No token found.");
+                return;
+            }
+
             var apiUrl = "http://localhost:5215/api/flashcardsCollection";
-            var response = await Http.PostAsJsonAsync(apiUrl, newCollection);
+            var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+            {
+                Content = JsonContent.Create(newCollection)
+            };
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -73,7 +83,7 @@
             }
             else
             {
-                Console.WriteLine("Error occurred while creating collection.");
+                Console.WriteLine($"Error occurred while creating collection. Status: {response.StatusCode}");
             }
         }
         catch (Exception ex)
@@ -94,7 +104,7 @@
             Question = "",
             Answer = ""
         });
-        StateHasChanged(); 
+        StateHasChanged();
     }
 
     private void RemoveFlashcard(FlashcardDto flashcardDto)

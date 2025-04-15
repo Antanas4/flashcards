@@ -4,6 +4,7 @@
 @inject LocalStorageService localStorageService
 @using shared.Dtos
 @using System.Text.Json
+@using Blazored
 @rendermode InteractiveServer
 
 <h3>My Flashcards Collections</h3>
@@ -13,30 +14,22 @@
 
 @if (flashcardsCollections != null && flashcardsCollections.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Collection Name</th>
-                <th>Owner ID</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var collection in flashcardsCollections)
-            {
-                <tr>
-                    <td>@collection.Name</td>
-                    <td>@collection.OwnerId</td>
-                    <td>@collection.Description</td>
-                    <td>
-                        <a href="/editCollection/@collection.Id">Edit</a> | <button class="btn btn-danger"
-                            @onclick="() => DeleteCollectionAsync(collection.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card-grid">
+        @foreach (var collection in flashcardsCollections)
+        {
+            <div class="card flashcard">
+                <div class="card-body">
+                    <h5 class="card-title">@collection.Name</h5>
+                    <p class="card-text">@collection.Description</p>
+                    <div class="card-buttons">
+                        @* <button class="btn btn-primary" @onclick="() => StudyCollection(collection.Id)">Study</button> *@
+                        <button class="btn btn-secondary" @onclick="() => EditCollection(collection.Id)">Edit</button>
+                        @* <button class="btn btn-danger" @onclick="() => DeleteCollectionAsync(collection.Id)">Delete</button> *@
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
 else
 {
@@ -69,7 +62,8 @@ else
                 if (response.IsSuccessStatusCode)
                 {
                     var stream = await response.Content.ReadAsStreamAsync();
-                    flashcardsCollections = await JsonSerializer.DeserializeAsync<List<FlashcardsCollectionDto>>(stream, new JsonSerializerOptions
+                    flashcardsCollections = await JsonSerializer.DeserializeAsync<List<FlashcardsCollectionDto>>(stream, new
+                    JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
@@ -115,5 +109,9 @@ else
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
+    }
+    private void EditCollection(int id)
+    {
+        NavigationManager.NavigateTo($"/editCollection/{id}");
     }
 }

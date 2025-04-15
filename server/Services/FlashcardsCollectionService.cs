@@ -23,12 +23,12 @@ namespace server.Services
 
         public async Task<List<FlashcardsCollectionDto>> GetMyFlashcardsCollectionsAsync()
         {
-            var user = await _authService.GetAuthenticatedUserAsync();
-            if (user == null)
+            var userDto = await _authService.GetAuthenticatedUserAsync();
+            if (userDto == null)
                 throw new UnauthorizedAccessException("User not authenticated");
 
             var collections = await _dbContext.FlashcardsCollection
-                .Where(c => c.User.Id == user.Id)
+                .Where(c => c.User.Id == userDto.Id)
                 .Include(c => c.Flashcards)
                 .ToListAsync();
 
@@ -40,15 +40,15 @@ namespace server.Services
             var userDto = await _authService.GetAuthenticatedUserAsync();
 
             if (userDto == null)
-            {
-                throw new KeyNotFoundException("Authenticated user not found.");
-            }
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var user = await _dbContext.Users.FindAsync(userDto.Id);
 
             var flashcardsCollection = new FlashcardsCollection
             {
                 Name = flashcardsCollectionDto.Name,
                 Description = flashcardsCollectionDto.Description,
-                User = _mapper.Map<User>(userDto),
+                User = user,
                 Flashcards = flashcardsCollectionDto.Flashcards?.Select(fcDto => _mapper.Map<Flashcard>(fcDto)).ToList()
             };
 
