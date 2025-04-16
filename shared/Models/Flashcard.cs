@@ -8,7 +8,6 @@ namespace shared.Models
         private int _id;
         private string _question;
         private string _answer;
-        private int _correctAnswerStreak;
         private FlashcardsCollection _flashcardsCollection;
 
         [Key]
@@ -34,12 +33,6 @@ namespace shared.Models
         {
             get => _answer;
             set => _answer = value;
-        }
-
-        public int CorrectAnswerStreak
-        {
-            get => _correctAnswerStreak;
-            set => _correctAnswerStreak = value;
         }
 
         public Flashcard(string question, string answer)

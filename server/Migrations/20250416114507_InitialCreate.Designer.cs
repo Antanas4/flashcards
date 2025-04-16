@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250409120646_InitialCreate")]
+    [Migration("20250416114507_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -34,9 +34,6 @@ namespace server.Migrations
                     b.Property<string>("Answer")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("CorrectAnswerStreak")
-                        .HasColumnType("integer");
 
                     b.Property<int>("FlashcardsCollectionId")
                         .HasColumnType("integer");

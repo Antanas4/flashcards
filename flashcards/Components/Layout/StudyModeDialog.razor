@@ -1,0 +1,48 @@
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Study Mode</h5>
+                <button type="button" class="btn-close" @onclick="OnClose"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center gap-3 flex-wrap">
+                <div class="card text-center study-mode-card" style="width: 12rem; cursor: pointer;" @onclick='() => SelectMode("BasicReview")'>
+                    <div class="card-body">
+                        <i class="bi bi-book fs-1 mb-2"></i>
+                        <h6 class="card-title">Basic Review</h6>
+                        <p class="card-text">Go over all cards without strict rules.</p>
+                    </div>
+                </div>
+                <div class="card text-center study-mode-card" style="width: 12rem; cursor: pointer;" @onclick='() => SelectMode("CorrectStreak")'>
+                    <div class="card-body">
+                        <i class="bi bi-lightning-charge fs-1 mb-2"></i>
+                        <h6 class="card-title">Correct Streak</h6>
+                        <p class="card-text">Recall cards correctly in a row.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .study-mode-card {
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .study-mode-card:hover {
+        transform: translateY(-5px);
+        background-color: #f0f0f0;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback<string> OnModeSelected { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private async Task SelectMode(string mode)
+    {
+        await OnModeSelected.InvokeAsync(mode);
+        await OnClose.InvokeAsync();
+    }
+}

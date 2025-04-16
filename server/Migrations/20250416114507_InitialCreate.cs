@@ -54,8 +54,7 @@ namespace server.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FlashcardsCollectionId = table.Column<int>(type: "integer", nullable: false),
                     Question = table.Column<string>(type: "text", nullable: false),
-                    Answer = table.Column<string>(type: "text", nullable: false),
-                    CorrectAnswerStreak = table.Column<int>(type: "integer", nullable: false)
+                    Answer = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

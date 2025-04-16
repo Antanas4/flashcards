@@ -6,6 +6,7 @@ using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using shared.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,21 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddScoped<UserService>();
     services.AddScoped<FlashcardsCollectionService>();
     services.AddScoped<AuthService>();
+    services.AddScoped<StudySessionService>();
     services.AddHttpContextAccessor();
+    services.AddScoped<CorrectStreakHandler>();
+    services.AddScoped<BasicReviewHandler>();
+
+    services.AddScoped<Func<StudySessionMode, IStudySessionModeHandler>>(serviceProvider => mode =>
+    {
+        return mode switch
+        {
+            StudySessionMode.CorrectStreak => serviceProvider.GetRequiredService<CorrectStreakHandler>(),
+            StudySessionMode.BasicReview => serviceProvider.GetRequiredService<BasicReviewHandler>(),
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), $"Unsupported mode {mode}")
+        };
+    });
+
 
     services.AddAutoMapper(typeof(FlashcardMapperProfile),
                         typeof(FlashcardsCollectionMapperProfile),
