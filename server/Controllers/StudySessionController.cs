@@ -32,13 +32,13 @@ namespace server.Controllers
         }
 
         [HttpGet("{studySessionId}/next-flashcard")]
-        public async Task<ActionResult<StudySessionFlashcardDto>> GetNextFlashcard(int studySessionId)
+        public async Task<ActionResult<StudySessionFlashcardDto?>> GetNextFlashcard(int studySessionId)
         {
             try
             {
                 var flashcard = await _studySessionService.GetNextFlashcardAsync(studySessionId);
                 if (flashcard == null)
-                    return NoContent();
+                    return null;
 
                 return Ok(flashcard);
             }

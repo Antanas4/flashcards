@@ -1,155 +1,9 @@
-@* @page "/study/{CollectionId:int}/{Mode}"
+@page "/flashcards/{studySessionId}"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using shared.Dtos
-@using shared.Enums
-
-<h3>Study Session</h3>
-
-@if (!loaded)
-{
-    <p>Loading...</p>
-}
-else if (session == null)
-{
-    <p>Failed to load session.</p>
-}
-else if (currentFlashcard != null)
-{
-    <p><strong>Mode:</strong> @mode.ToString()</p>
-    <p><strong>Progress:</strong> @seenCount / @session.Flashcards.Count</p>
-
-    <div class="card my-3 p-3">
-        <p><strong>Q:</strong> @currentFlashcard.Flashcard.Question</p>
-
-        <button class="btn btn-success me-2" @onclick="OnCorrect">Correct</button>
-        <button class="btn btn-danger" @onclick="OnIncorrect">Incorrect</button>
-    </div>
-}
-else
-{
-    <p><strong>Study session complete!</strong></p>
-}
-
-@code {
-    [Parameter] public int CollectionId { get; set; }
-    [Parameter] public string Mode { get; set; }
-
-    private bool loaded = false;
-    private int collectionId;
-    private StudySessionMode mode;
-
-    private StudySessionDto session;
-    private StudySessionFlashcardDto currentFlashcard;
-    private int seenCount = 0;
-
-    private async Task OnCorrect()
-    {
-        await AnswerFlashcard(true);
-    }
-
-    private async Task OnIncorrect()
-    {
-        await AnswerFlashcard(false);
-    }
-
-    private class StartSessionRequestDto
-    {
-        public int CollectionId { get; set; }
-        public StudySessionMode StudySessionMode { get; set; }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        collectionId = CollectionId;
-        mode = Enum.TryParse<StudySessionMode>(Mode, ignoreCase: true, out var parsedMode)
-        ? parsedMode
-        : StudySessionMode.BasicReview;
-
-        var startRequest = new StartSessionRequestDto
-        {
-            CollectionId = collectionId,
-            StudySessionMode = mode
-        };
-
-        try
-        {
-            var apiUrl = "http://localhost:5215/api/studySession";
-            var response = await Http.PostAsJsonAsync(apiUrl, startRequest);
-
-            if (response.IsSuccessStatusCode)
-            {
-                session = await response.Content.ReadFromJsonAsync<StudySessionDto>();
-                await LoadNextFlashcard();
-            }
-            else
-            {
-                Console.WriteLine($"Failed to start session. Status: {response.StatusCode}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-        }
-    }
-
-    private async Task LoadNextFlashcard()
-    {
-        var apiUrl = $"http://localhost:5215/api/studySession/{session.Id}/next-flashcard";
-        var response = await Http.GetAsync(apiUrl);
-
-        if (response.IsSuccessStatusCode)
-        {
-            currentFlashcard = await response.Content.ReadFromJsonAsync<StudySessionFlashcardDto>();
-            if (currentFlashcard != null)
-            {
-                seenCount++;
-                Console.WriteLine($"Loaded flashcard ID: {currentFlashcard.FlashcardId}");
-            }
-            else
-            {
-                Console.WriteLine("No more flashcards to load.");
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed to load next flashcard.");
-        }
-
-        loaded = true;
-        StateHasChanged();  // Ensure UI is updated with the next flashcard
-    }
-
-    private async Task AnswerFlashcard(bool isCorrect)
-    {
-        if (currentFlashcard == null)
-        {
-            Console.WriteLine("No flashcard to answer.");
-            return;
-        }
-
-        var apiUrl = $"http://localhost:5215/api/studySession/{session.Id}/flashcards/{currentFlashcard.FlashcardId}/answer?isCorrect={isCorrect}";
-        var response = await Http.PostAsync(apiUrl, null);
-
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine($"Flashcard ID: {currentFlashcard.FlashcardId} answered as {(isCorrect ? "correct" : "incorrect")}");
-            await LoadNextFlashcard();  // Load next flashcard after answering
-        }
-        else
-        {
-            Console.WriteLine($"Failed to register answer. Status: {response.StatusCode}");
-        }
-    }
-} *@
-
-
-@page "/flashcards/{studySessionId}"
-@inject HttpClient Http
-@using shared.Dtos
-@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
-
+@rendermode InteractiveServer
 
 <PageTitle>Study Session</PageTitle>
 
@@ -162,19 +16,20 @@ else
 else
 {
     <div class="flashcard-container">
-        <div class="flashcard" @onclick="FlipCard" @ref="flashcardElement">
-            <div class="question" style="display:@(isFlipped ? "none" : "block")">
-                <p>@flashcard.Flashcard.Question</p>
-            </div>
-            <div class="answer" style="display:@(isFlipped ? "block" : "none")">
-                <p>@flashcard.Flashcard.Answer</p>
+        <div class="flashcard-container">
+            <div class="flashcard @(isFlipped ? "flipped" : "")" @onclick="FlipCard">
+                <div class="front">
+                    <p>@flashcard.Flashcard.Question</p>
+                </div>
+                <div class="back">
+                    <p>@flashcard.Flashcard.Answer</p>
+                </div>
             </div>
         </div>
 
         <div class="button-group">
             <button class="btn btn-success" @onclick="() => RegisterAnswer(true)">Correct</button>
             <button class="btn btn-danger" @onclick="() => RegisterAnswer(false)">Incorrect</button>
-            <button class="btn btn-primary" @onclick="ShowAlert">Click Me</button>
         </div>
     </div>
 }
@@ -199,11 +54,9 @@ else
         if (int.TryParse(studySessionId, out var id))
         {
             parsedStudySessionId = id;
-            // Use parsedStudySessionId in your code instead of studySessionId
         }
         else
         {
-            // Handle invalid input here, like logging or showing an error
             Console.WriteLine("Invalid studySessionId.");
         }
 
@@ -213,27 +66,34 @@ else
     private async Task GetNextFlashcard()
     {
         var apiUrl = $"http://localhost:5215/api/studySession/{studySessionId}/next-flashcard";
-        var response = await Http.GetFromJsonAsync<StudySessionFlashcardDto>(apiUrl);
 
-        if (response != null)
-        {
-            flashcard = response;
-        }
-        StateHasChanged();
-    }
-    private async Task ShowAlert()
-    {
         try
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Button was clicked!");
+            var response = await Http.GetAsync(apiUrl);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                NavigationManager.NavigateTo("/myflashcards");
+                return;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                flashcard = await response.Content.ReadFromJsonAsync<StudySessionFlashcardDto>();
+            }
+            else
+            {
+                Console.WriteLine($"Unexpected response status: {response.StatusCode}");
+                NavigationManager.NavigateTo("/myflashcards");
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error invoking alert: " + ex.Message);
+            NavigationManager.NavigateTo("/myflashcards");
         }
+
+        StateHasChanged();
     }
-
-
 
     private async Task RegisterAnswer(bool isCorrect)
     {
@@ -242,63 +102,82 @@ else
             var apiUrl =
             $"http://localhost:5215/api/studySession/{studySessionId}/flashcards/{flashcard.FlashcardId}/answer?isCorrect={isCorrect}";
             await Http.PostAsync(apiUrl, null);
-            await GetNextFlashcard(); // Fetch the next flashcard
+            await GetNextFlashcard();
         }
     }
 
     private void FlipCard()
     {
         isFlipped = !isFlipped;
+        StateHasChanged();
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        // Any necessary cleanup can go here, e.g. cancelling requests
-    }
 }
 
 <style>
+    h3 {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+    
     .flashcard-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-top: 2rem;
     }
 
     .flashcard {
-        width: 200px;
-        height: 300px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
+        width: 350px;
+        height: 250px;
         perspective: 1000px;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.6s;
-        /* Remove hover effect */
-        transform: rotateY(0deg);
+        margin-bottom: 1.5rem;
     }
 
-    .flashcard .question,
-    .flashcard .answer {
+    .flashcard>.front,
+    .flashcard>.back {
         width: 100%;
         height: 100%;
         position: absolute;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         display: flex;
         align-items: center;
         justify-content: center;
         backface-visibility: hidden;
-        text-align: center;
+        transition: transform 0.6s ease-in-out;
         padding: 20px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 500;
+        background-color: white;
     }
 
-    .flashcard .answer {
-        background-color: #f1f1f1;
+    .flashcard>.back {
+        transform: rotateY(180deg);
+        background-color: #f9f9f9;
+        color: #333;
+    }
+
+    .flashcard {
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s ease-in-out;
+    }
+
+    .flashcard.flipped {
         transform: rotateY(180deg);
     }
 
-    /* Ensure that the card does not rotate on hover */
-    .flashcard:hover {
-        transform: rotateY(0deg);
+    .button-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 1rem;
+        font-weight: 600;
     }
 </style>
