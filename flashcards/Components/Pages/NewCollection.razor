@@ -5,55 +5,63 @@
 @rendermode InteractiveServer
 
 <h3 class="text-center mt-3">Create New Flashcards Collection</h3>
+@if (!isAuthorized)
+{
+    <p>Please <a href="/login">log in</a> to create new flashcards.</p>
+}
+else
+{
+    <div class="container">
+        <div class="card p-4 mt-4">
 
-<div class="container">
-    <div class="card p-4 mt-4">
+            <EditForm Model="@newCollection" OnValidSubmit="HandleSubmitAsync" @ref="editForm">
+                <DataAnnotationsValidator />
 
-        <EditForm Model="@newCollection" OnValidSubmit="HandleSubmitAsync" @ref="editForm">
-            <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-bold">Collection Name</label>
+                    <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' "
+                        @bind-Value="newCollection.Name" />
+                    <ValidationMessage For="@(() => newCollection.Name)" />
+                </div>
 
-            <div class="mb-3">
-                <label for="name" class="form-label fw-bold">Collection Name</label>
-                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' "
-                    @bind-Value="newCollection.Name" />
-                <ValidationMessage For="@(() => newCollection.Name)" />
-            </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-bold">Description</label>
+                    <InputTextArea id="description" placeholder="Add a description" class="form-control"
+                        @bind-Value="newCollection.Description" />
+                    <ValidationMessage For="@(() => newCollection.Description)" />
+                </div>
 
-            <div class="mb-3">
-                <label for="description" class="form-label fw-bold">Description</label>
-                <InputTextArea id="description" placeholder="Add a description" class="form-control"
-                    @bind-Value="newCollection.Description" />
-                <ValidationMessage For="@(() => newCollection.Description)" />
-            </div>
+                <h4 class="mt-4">Flashcards</h4>
 
-            <h4 class="mt-4">Flashcards</h4>
+                @foreach (var flashcard in newCollection.Flashcards)
+                {
+                    <Flashcard FlashcardDto="@flashcard" OnRemove="@(() => RemoveFlashcard(flashcard))" />
+                }
 
-            @foreach (var flashcard in newCollection.Flashcards)
-            {
-                <Flashcard FlashcardDto="@flashcard" OnRemove="@(() => RemoveFlashcard(flashcard))" />
-            }
+                <button type="button" class="btn btn-success mt-3" @onclick="AddFlashcard">+ Add Flashcard</button>
 
-            <button type="button" class="btn btn-success mt-3" @onclick="AddFlashcard">+ Add Flashcard</button>
-
-            <div class="d-flex justify-content-between mt-3">
-                <button type="submit" class="btn btn-primary">Create Collection</button>
-                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
-            </div>
-        </EditForm>
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="submit" class="btn btn-primary">Create Collection</button>
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
     </div>
-</div>
+}
+
 
 @code {
     private EditForm editForm;
+    private bool isAuthorized = false;
     private FlashcardsCollectionDto newCollection = new FlashcardsCollectionDto
     {
         Name = "",
         Description = "",
         Flashcards = new List<FlashcardDto>
-        {
-            new FlashcardDto { Question = "", Answer = "" },
-            new FlashcardDto { Question = "", Answer = "" }
-        }
+{
+new FlashcardDto { Question = "", Answer = "" },
+new FlashcardDto { Question = "", Answer = "" }
+}
     };
 
     private async Task HandleSubmitAsync()
@@ -89,6 +97,20 @@
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await localStorageService.GetTokenAsync("authToken");
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                isAuthorized = true;
+                StateHasChanged();
+            }
         }
     }
 

@@ -32,19 +32,18 @@ namespace server.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> GetAuthenticatedUserAsync()
+        public async Task<User> GetAuthenticatedUserAsync()
         {
 
             var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
             var userDataClaim = claimsIdentity?.FindFirst(ClaimTypes.Name);
-            var userId = userDataClaim;
 
-            if (userId == null)
+            if (userDataClaim == null)
                 return null;
 
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId.Value));
+            var userId = int.Parse(userDataClaim.Value);
 
-            return user != null ? _mapper.Map<UserDto>(user) : null;
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
     }
 }

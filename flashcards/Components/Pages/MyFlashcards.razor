@@ -150,12 +150,7 @@ else
     {
         showStudyDialog = false;
     }
-
-    @* private void StartStudySession(string mode)
-    {
-        NavigationManager.NavigateTo($"/study/{selectedCollectionId}/{mode}");
-    } *@
-
+    
     private async Task StartStudySession(string mode)
     {
         var startRequest = new StartSessionRequestDto

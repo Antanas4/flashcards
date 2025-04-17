@@ -23,12 +23,12 @@ namespace server.Services
 
         public async Task<List<FlashcardsCollectionDto>> GetMyFlashcardsCollectionsAsync()
         {
-            var userDto = await _authService.GetAuthenticatedUserAsync();
-            if (userDto == null)
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
                 throw new UnauthorizedAccessException("User not authenticated");
 
             var collections = await _dbContext.FlashcardsCollection
-                .Where(c => c.User.Id == userDto.Id)
+                .Where(c => c.User.Id == user.Id)
                 .Include(c => c.Flashcards)
                 .ToListAsync();
 
@@ -37,12 +37,9 @@ namespace server.Services
 
         public async Task<FlashcardsCollectionDto> CreateFlashcardsCollectionAsync(FlashcardsCollectionDto flashcardsCollectionDto)
         {
-            var userDto = await _authService.GetAuthenticatedUserAsync();
-
-            if (userDto == null)
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
                 throw new UnauthorizedAccessException("User not authenticated");
-
-            var user = await _dbContext.Users.FindAsync(userDto.Id);
 
             var flashcardsCollection = new FlashcardsCollection
             {
@@ -53,7 +50,6 @@ namespace server.Services
             };
 
             _dbContext.FlashcardsCollection.Add(flashcardsCollection);
-
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<FlashcardsCollectionDto>(flashcardsCollection);
@@ -62,26 +58,27 @@ namespace server.Services
         public async Task<FlashcardsCollectionDto> GetFlashcardsCollectionByIdAsync(int id)
         {
             var flashcardsCollection = await _dbContext.FlashcardsCollection
-            .Include(c => c.Flashcards)
-            .Include(c => c.User)
-            .FirstOrDefaultAsync(c => c.Id == id);
+                .Include(c => c.Flashcards)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (flashcardsCollection == null)
-            {
                 throw new KeyNotFoundException($"Flashcards collection with id {id} not found.");
-            }
 
             return _mapper.Map<FlashcardsCollectionDto>(flashcardsCollection);
         }
 
         public async Task<bool> DeleteFlashcardsCollectionByIdAsync(int id)
         {
-            var flashcardsCollection = await _dbContext.FlashcardsCollection.FindAsync(id);
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var flashcardsCollection = await _dbContext.FlashcardsCollection
+                .FirstOrDefaultAsync(c => c.Id == id && c.User.Id == user.Id);
 
             if (flashcardsCollection == null)
-            {
                 throw new KeyNotFoundException("Collection not found");
-            }
 
             _dbContext.FlashcardsCollection.Remove(flashcardsCollection);
             await _dbContext.SaveChangesAsync();
@@ -91,14 +88,17 @@ namespace server.Services
 
         public async Task<bool> UpdateFlashcardsCollectionByIdAsync(FlashcardsCollectionDto updatedCollectionDto)
         {
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
             var collectionToUpdate = await _dbContext.FlashcardsCollection
                 .Include(c => c.Flashcards)
-                .FirstOrDefaultAsync(c => c.Id == updatedCollectionDto.Id);
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == updatedCollectionDto.Id && c.User.Id == user.Id);
 
             if (collectionToUpdate == null)
-            {
-                throw new KeyNotFoundException("Collection not found");
-            }
+                throw new KeyNotFoundException("Collection not found or you do not have permission to update it");
 
             collectionToUpdate.Name = updatedCollectionDto.Name;
             collectionToUpdate.Description = updatedCollectionDto.Description;

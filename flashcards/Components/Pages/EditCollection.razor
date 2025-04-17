@@ -2,33 +2,35 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @rendermode InteractiveServer
+@inject LocalStorageService localStorageService
 
 <h3 class="text-center mt-3">Edit Collection</h3>
 
 <div class="container">
     <div class="card p-4 mt-4">
-
         <EditForm Model="@flashcardsCollection" OnValidSubmit="HandleSubmitAsync" @ref="editForm">
             <DataAnnotationsValidator />
 
-            <div class="mb-3">
-                <label for="name" class="form-label fw-bold">Collection Name</label>
-                <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions' " @bind-Value="flashcardsCollection.Name" />
-                <ValidationMessage For="@(() => flashcardsCollection.Name)" />
+            <!-- Collection Name and Delete Button -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <label for="name" class="form-label fw-bold">Collection Name</label>
+                    <InputText id="name" class="form-control" placeholder="Enter collection name, like 'Math questions'"
+                        @bind-Value="flashcardsCollection.Name" />
+                    <ValidationMessage For="@(() => flashcardsCollection.Name)" />
+                </div>
+                <button type="button" class="btn btn-danger" @onclick="DeleteCollection">Delete Collection</button>
             </div>
 
+            <!-- Description Section -->
             <div class="mb-3">
                 <label for="description" class="form-label fw-bold">Description</label>
-                <InputTextArea id="description" placeholder="Add a description" class="form-control" @bind-Value="flashcardsCollection.Description" />
+                <InputTextArea id="description" placeholder="Add a description" class="form-control"
+                    @bind-Value="flashcardsCollection.Description" />
                 <ValidationMessage For="@(() => flashcardsCollection.Description)" />
             </div>
 
-            <div class="mb-3">
-                <label for="ownerId" class="form-label fw-bold">Owner ID</label>
-                <InputNumber id="ownerId" class="form-control" @bind-Value="flashcardsCollection.OwnerId" />
-                <ValidationMessage For="@(() => flashcardsCollection.OwnerId)" />
-            </div>
-
+            <!-- Flashcards List -->
             <h4 class="mt-4">Flashcards</h4>
 
             @foreach (var flashcard in flashcardsCollection.Flashcards)
@@ -36,8 +38,12 @@
                 <Flashcard FlashcardDto="@flashcard" OnRemove="@(() => RemoveFlashcard(flashcard))" />
             }
 
-            <button type="button" class="btn btn-success mt-3" @onclick="AddFlashcard">+ Add Flashcard</button>
+            <!-- Add Flashcard Button (White background and width of last flashcard) -->
+            <div class="mt-3">
+                <button type="button" class="btn btn-light w-100" @onclick="AddFlashcard">+ Add Flashcard</button>
+            </div>
 
+            <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-3">
                 <button type="submit" class="btn btn-primary">Update Collection</button>
                 <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
@@ -85,8 +91,23 @@
     {
         try
         {
+            var token = await localStorageService.GetTokenAsync("authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("No token found.");
+                return;
+            }
+
             var apiUrl = $"http://localhost:5215/api/flashcardsCollection/{id}";
-            var response = await Http.PatchAsJsonAsync(apiUrl, flashcardsCollection);
+
+            var request = new HttpRequestMessage(HttpMethod.Patch, apiUrl)
+            {
+                Content = JsonContent.Create(flashcardsCollection)
+            };
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -94,7 +115,41 @@
             }
             else
             {
-                Console.WriteLine("Error occurred while updating collection." + response);
+                Console.WriteLine($"Error occurred while updating collection. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteCollection()
+    {
+        try
+        {
+            var apiUrl = $"http://localhost:5215/api/flashcardsCollection/{id}";
+
+            var token = await localStorageService.GetTokenAsync("authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("No token found.");
+                return;
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, apiUrl);
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/myFlashcards");
+            }
+            else
+            {
+                Console.WriteLine($"Error occurred while deleting collection. Status: {response.StatusCode}");
             }
         }
         catch (Exception ex)
@@ -122,3 +177,86 @@
         flashcardsCollection.Flashcards.Remove(flashcardDto);
     }
 }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    h3 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    button.btn-light {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    button.btn-light:hover {
+        background-color: #e9ecef;
+    }
+
+    button.btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    button.btn-danger:hover {
+        background-color:#dc3545;
+    }
+
+    button.btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    button.btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    button.btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    button.btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    button.w-100 {
+        width: 100%;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 8px;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: none;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #495057;
+    }
+
+    h4 {
+        font-size: 20px;
+        color: #007bff;
+        margin-top: 20px;
+    }
+</style>

@@ -34,13 +34,13 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserDto>> GetAuthenticatedUser()
+        public async Task<ActionResult<UserDto>> GetAuthenticatedUserAsync()
         {
-            var userDto = await _authService.GetAuthenticatedUserAsync();
-            if (userDto == null)
+            var user = await _authService.GetAuthenticatedUserAsync();
+            if (user == null)
                 return NotFound("User not authenticated.");
             
-            return Ok(userDto);
+            return Ok(user);
         }
     }
 }

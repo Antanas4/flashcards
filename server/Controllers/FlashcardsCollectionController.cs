@@ -72,6 +72,7 @@ namespace server.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteFlashcardsCollectionByIdAsync(int id)
         {
             try
@@ -94,6 +95,7 @@ namespace server.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<ActionResult> UpdateFlashcardsCollectionByIdAsync(FlashcardsCollectionDto updatedCollectionDto)
         {
             try
